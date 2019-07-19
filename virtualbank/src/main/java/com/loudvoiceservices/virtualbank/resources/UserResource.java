@@ -44,7 +44,7 @@ public class UserResource {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
-	@GetMapping(value = "/accounts/balance")
+	@GetMapping(value = "/balance")
 	public String checkBalance() throws Exception {
 		return service.balance();
 	}
