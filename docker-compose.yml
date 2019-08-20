@@ -1,0 +1,37 @@
+version: "3.1"
+
+services:
+  mongo:
+    image: mongo:latest
+    environment:
+      TZ: America/Sao_Paulo
+    networks:
+      ms_net:
+        aliases:
+          - mongo
+
+  api:
+    image: bankapi
+    environment:
+      TZ: America/Sao_Paulo
+      MONGO_URI: mongodb://mongo:27017
+    networks:
+      ms_net:
+        aliases:
+          - unicornflask
+          
+  nginx:
+    image: nginx
+    ports:
+      - 80:80
+    environment:
+      - TZ=America/Sao_Paulo
+    networks:
+      ms_net:
+        aliases:
+          - nginx
+
+networks:
+  ms_net:
+    external:
+      name: netms

@@ -1,0 +1,272 @@
+---
+swagger: "2.0"
+info:
+  description: "API desenvolvida para simular um sistema financeiro simples."
+  version: "0.0.1"
+  title: "Virtual Bank"
+  contact:
+    email: "garbelotti@ymail.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "127.0.0.1"
+basePath: "/"
+tags:
+- name: "login"
+  description: "Login related operations"
+- name: "operation"
+  description: "Account related transactions"
+schemes:
+- "http"
+paths:
+  /register:
+    post:
+      tags:
+      - "login"
+      summary: "Register a new account"
+      description: ""
+      operationId: "register_account"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "User information"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        405:
+          description: "Invalid input"
+        default:
+          description: "successful operation"
+      x-swagger-router-controller: "swagger_server.controllers.login_controller"
+  /login:
+    post:
+      tags:
+      - "login"
+      summary: "Login the user"
+      description: "Retrieve the api key."
+      operationId: "login_user"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "User object"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        400:
+          description: "Invalid username/password supplied"
+        default:
+          description: "successful operation"
+      x-swagger-router-controller: "swagger_server.controllers.login_controller"
+  /deposit:
+    post:
+      tags:
+      - "operation"
+      summary: "Add funds to account"
+      description: ""
+      operationId: "deposit"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Order object"
+        required: true
+        schema:
+          $ref: "#/definitions/Order"
+      responses:
+        401:
+          description: "API key is missing or invalid"
+          headers:
+            ApiKeyAuth:
+              type: "string"
+        default:
+          description: "successful operation"
+      security:
+      - ApiKeyAuth: []
+      x-swagger-router-controller: "swagger_server.controllers.operation_controller"
+  /withdraw:
+    post:
+      tags:
+      - "operation"
+      summary: "Remove funds from account"
+      description: ""
+      operationId: "withdraw"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Order object"
+        required: true
+        schema:
+          $ref: "#/definitions/Order"
+      responses:
+        401:
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+        default:
+          description: "successful operation"
+      security:
+      - ApiKeyAuth: []
+      x-swagger-router-controller: "swagger_server.controllers.operation_controller"
+  /balance:
+    post:
+      tags:
+      - "operation"
+      summary: "Retrieve the account balance"
+      description: ""
+      operationId: "balance"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Balance object"
+        required: true
+        schema:
+          $ref: "#/definitions/Balance"
+      responses:
+        401:
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+        default:
+          description: "successful operation"
+      security:
+      - ApiKeyAuth: []
+      x-swagger-router-controller: "swagger_server.controllers.operation_controller"
+  /history:
+    post:
+      tags:
+      - "operation"
+      summary: "Retrieve the account history"
+      description: ""
+      operationId: "history"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "History object"
+        required: true
+        schema:
+          $ref: "#/definitions/History"
+      responses:
+        401:
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+        default:
+          description: "successful operation"
+      security:
+      - ApiKeyAuth: []
+      x-swagger-router-controller: "swagger_server.controllers.operation_controller"
+securityDefinitions:
+  ApiKeyAuth:
+    type: "apiKey"
+    name: "X-API-Key"
+    in: "header"
+    x-apikeyInfoFunc: "app.basic_auth"
+definitions:
+  Order:
+    type: "object"
+    required:
+    - "email"
+    - "value"
+    properties:
+      email:
+        type: "string"
+        format: "email"
+      value:
+        type: "number"
+        format: "double"
+    xml:
+      name: "Order"
+    example:
+      value: "10"
+      email: "email@server.com"
+  User:
+    type: "object"
+    required:
+    - "email"
+    - "password"
+    properties:
+      email:
+        type: "string"
+        format: "email"
+      password:
+        type: "string"
+    xml:
+      name: "User"
+    example:
+      password: "password"
+      email: "email@server.com"
+  Balance:
+    type: "object"
+    required:
+    - "email"
+    properties:
+      email:
+        type: "string"
+        format: "email"
+    xml:
+      name: "Balance"
+    example:
+      email: "email@server.com"
+  History:
+    type: "object"
+    properties:
+      email:
+        type: "string"
+      from:
+        type: "string"
+        format: "date"
+      to:
+        type: "string"
+        format: "date"
+    xml:
+      name: "Balance"
+    example:
+      email: "email@server.com"
+      from: "08-10-2019"
+      to: "08-19-2019"
+responses:
+  UnauthorizedError:
+    description: "API key is missing or invalid"
+    headers:
+      WWW_Authenticate:
+        type: "string"

@@ -1,0 +1,15 @@
+requests
+rfc3339
+rfc3987
+pyyaml 
+flask
+connexion 
+connexion[swagger-ui] 
+pymongo 
+swagger-ui-bundle
+greenlet
+gevent
+gunicorn
+gunicorn[gevent]
+openapi-spec-validator
+python_dateutil
