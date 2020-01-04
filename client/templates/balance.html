@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/4.3/examples/navbar-static/">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <title>Fintech</title>
+
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+    
+    <script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+    <script type="text/javascript">
+      $(document).ready(function(){
+
+        const error = function(message){
+          document.getElementById('error-message').innerHTML = message;
+          $('#balance-div').hide()
+          $('#error-message').show()
+        }
+
+        $('#btn-check-balance').click(function(){
+
+          const email = document.getElementById('email').value;
+          const password = document.getElementById('password').value;
+
+          if (email && password) {
+
+            fetch('http://localhost:5000/account_info', {
+              method: 'POST',
+              body: JSON.stringify({
+                email: email,
+                password: password
+              }),
+              headers: {"Content-Type": "application/json"}
+            })
+            .then((response) => response.json())
+            .then(data => {
+
+              if (data.id) {
+                let balance = `R$ ${(data.balance).toFixed(2)}`
+                document.getElementById('balance-container').innerHTML = balance;
+                $('#balance-div').show()
+                $('#error-message').hide()
+              } else {
+                  switch (data.errorCode) {
+                    case 2:
+                      error('Insira um e-mail válido.');
+                      break;
+                    case 6:
+                      error('Conta não encontrada.');
+                      break;
+                    case 10:
+                      error('Insira um valor positivo.');
+                      break;
+                  }
+                };
+            })
+            
+          } else {
+
+            error('Preencha todos os campos.')
+
+          };
+        })
+
+      });
+
+
+    </script>
+  </head>
+
+  <body>
+
+  	<nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
+  <a class="navbar-brand" href="/">Fintech</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarCollapse">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="/">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/create_account">Criar conta</a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="/#">Saldo<span class="sr-only">(current)</span></a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+
+    <div id="error-message" class="alert alert-danger"  style="display: none"></div>
+
+    <div class="container">
+        <h2 class="form-signin-heading">Verifique seu saldo:</h2>
+        <label for="email" class="sr-only">E-mail</label>
+        <input type="email" id="email" class="form-control" placeholder="E-mail" required autofocus>
+        <label for="password" class="sr-only">Senha</label>
+        <input type="password" id="password" class="form-control" placeholder="Senha" required>
+        <div class="checkbox">
+    </div>
+        <button class="btn btn-lg btn-primary btn-block" id="btn-check-balance">Enviar</button>
+
+      <div class="card mb-4 shadow-sm" id="balance-div"  style="display: none">
+        <div class="card-header">
+          <h4 class="my-0 font-weight-normal">Seu saldo é de:</h4>
+        </div>
+        <div class="card-body">
+          <ul class="list-unstyled mt-3 mb-4">
+            <li id="balance-container"></li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </body>
+</html>

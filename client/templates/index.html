@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta name="description" content="">
+		<meta name="author" content="">
+
+
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+		<title>Fintech</title>
+
+		<style>
+
+			.bd-placeholder-img {
+				font-size: 1.125rem;
+				text-anchor: middle;
+				-webkit-user-select: none;
+				-moz-user-select: none;
+				-ms-user-select: none;
+				user-select: none;
+			}
+
+			@media (min-width: 768px) {
+				.bd-placeholder-img-lg {
+					font-size: 3.5rem;
+				}
+			}
+
+		</style>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+		<script type="text/javascript">
+			$(document).ready(function(){
+
+				const success = function(message){
+					document.getElementById('success-message').innerHTML = message;
+					$('#success-message').show()
+					$('#error-message').hide()
+				}
+
+				const error = function(message){
+					document.getElementById('error-message').innerHTML = message;
+					$('#success-message').hide()
+					$('#error-message').show()
+				}
+
+				$('#btn-deposit-money').click(function(){
+
+					const email = document.getElementById('email').value;
+					const password = document.getElementById('password').value;
+					let value = document.getElementById('value').value;
+
+					const depositValue = parseFloat(value);
+
+					if (email && password && depositValue) {
+
+						fetch('http://localhost:5000/deposit_money', {
+							method: 'POST',
+							body: JSON.stringify({
+								email: email,
+								password: password,
+								value: depositValue
+							}),
+							headers: {"Content-Type": "application/json"}
+						})
+						.then((response) => response.json())
+						.then(data => {
+							if (data.success) {
+								success(`Você depositou R$${(depositValue).toFixed(2)} reais.`);
+							} else {
+									switch (data.errorCode) {
+										case 2:
+											error('Insira um e-mail válido.');
+											break;
+										case 6:
+											error('Conta não encontrada.');
+											break;
+										case 10:
+											error('Insira um valor positivo.');
+											break;
+									}
+								};
+						})
+
+					} else {
+
+						error('Preencha todos os campos.');
+
+					};
+
+				});
+
+				$('#btn-withdraw-money').click(function(){
+
+					const email = document.getElementById('email').value;
+					const password = document.getElementById('password').value;
+					const value = document.getElementById('value').value;
+
+					const withdrawalValue = parseFloat(value);
+
+					if (email && password && withdrawalValue) {
+
+						fetch('http://localhost:5000/withdraw_money', {
+							method: 'POST',
+							body: JSON.stringify({
+								email: email,
+								password: password,
+								value: withdrawalValue
+							}),
+							headers: {"Content-Type": "application/json"}
+						})
+						.then((response) => response.json())
+						.then(data => {
+							if (data.success) {
+								success(`Você sacou R$${(withdrawalValue).toFixed(2)} reais.`);
+							} else {
+									switch (data.errorCode) {
+										case 2:
+											error('Insira um e-mail válido.');
+											break;
+										case 6:
+											error('Conta não encontrada.');
+											break;
+										case 10:
+											error('Insira um valor positivo.');
+											break;
+										case 11:
+											error('Você não tem dinheiro suficiente.');
+											break;
+									}
+								};
+						})
+						
+					} else {
+
+						error('Preencha todos os campos.');
+
+					};
+
+				});
+
+			});
+		</script>
+
+	</head>
+
+	<body>
+
+		<nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
+	<a class="navbar-brand" href="#">Fintech</a>
+	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	</button>
+	<div class="collapse navbar-collapse" id="navbarCollapse">
+		<ul class="navbar-nav mr-auto">
+			<li class="nav-item active">
+				<a class="nav-link" href="#">Home<span class="sr-only">(current)</span></a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" href="/create_account">Criar conta</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" href="/balance">Saldo</a>
+			</li>
+		</ul>
+	</div>
+</nav>
+
+
+		<div id="success-message" class="alert alert-success" style="display: none"></div>
+		<div id="error-message" class="alert alert-danger" style="display: none"></div>
+
+		<div class="container">
+
+				<h2 class="form-signin-heading">Depósitos ou saques</h2>
+				<label for="email" class="sr-only">E-mail</label>
+				<input type="email" id="email" class="form-control" placeholder="E-mail" required autofocus>
+				<label for="password" class="sr-only">Senha</label>
+				<input type="password" id="password" class="form-control" placeholder="Senha" required>
+				<label for="value" class="sr-only">Valor</label>
+				<input type="number" id="value" class="form-control" placeholder="Valor" required>
+				<button class="btn btn-lg btn-primary btn-block" id="btn-deposit-money">Depositar</button>
+				<button class="btn btn-lg btn-primary btn-block" id="btn-withdraw-money">Sacar</button>
+
+		</div>
+	</body>
+</html>
