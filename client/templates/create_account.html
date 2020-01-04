@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/4.3/examples/navbar-static/">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <title>Fintech</title>
+
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+
+	<script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+    <script type="text/javascript">
+      $(document).ready(function(){
+
+        const success = function(message){
+          document.getElementById('success-message').innerHTML = message;
+          $('#success-message').show()
+          $('#error-message').hide()
+        }
+
+        const error = function(message){
+          document.getElementById('error-message').innerHTML = message;
+          $('#success-message').hide()
+          $('#error-message').show()
+        }
+
+
+        $('#btn-create-account').click(function(){
+
+          const email = document.getElementById('email').value;
+          const password = document.getElementById('password').value;
+
+          if (email && password) {
+
+            fetch('http://localhost:5000/create', {
+              method: 'POST',
+              body: JSON.stringify({
+                email: email,
+                password: password
+              }),
+              headers: {"Content-Type": "application/json"}
+            })
+            .then((response) => response.json())
+            .then(data => {
+
+              if (data.success) {
+                success('Conta criada com sucesso!')
+              } else {
+                  switch (data.errorCode) {
+                    case 2:
+                      error('Insira um e-mail válido.')
+                      break
+                    case 3:
+                      error('A senha deve conter 8 caracteres, com 1 letra, 1 número e um caracter especial.')
+                      break
+                    case 4:
+                      error('Este e-mail já está cadastrado.')
+                  }
+                };
+              })
+
+          } else {
+
+            error('Preencha todos os campos.')
+
+          };
+
+        })
+        
+
+
+      });
+    </script>
+  </head>
+
+  <body>
+
+  	<nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
+	  <a class="navbar-brand" href="/">Fintech</a>
+	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+	    <span class="navbar-toggler-icon"></span>
+	  </button>
+	  <div class="collapse navbar-collapse" id="navbarCollapse">
+	    <ul class="navbar-nav mr-auto">
+	      <li class="nav-item">
+	        <a class="nav-link" href="/">Home</a>
+	      </li>
+	      <li class="nav-item active">
+	        <a class="nav-link" href="#">Criar conta<span class="sr-only">(current)</span></a>
+	      </li>
+	      <li class="nav-item">
+	        <a class="nav-link" href="/balance">Saldo</a>
+	      </li>
+	    </ul>
+	  </div>
+	</nav>
+
+
+    <div id="success-message" class="alert alert-success"  style="display: none"></div>
+    <div id="error-message" class="alert alert-danger"  style="display: none"></div>
+
+    <div class="container">
+        <h2 class="form-signin-heading">Preencha os campos abaixo:</h2>
+        <label for="email" class="sr-only">E-mail</label>
+        <input type="email" id="email" class="form-control" placeholder="E-mail" required autofocus>
+        <label for="password" class="sr-only">Senha</label>
+        <input type="password" id="password" class="form-control" placeholder="Senha" required>
+        <div class="checkbox">
+    </div>
+        <button class="btn btn-lg btn-primary btn-block" id="btn-create-account">Abrir conta</button>
+
+    </div>
+  </body>
+</html>
